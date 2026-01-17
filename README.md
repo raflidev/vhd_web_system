@@ -79,6 +79,73 @@ npm run build
 npm start
 ```
 
+Or use the combined command:
+
+```bash
+npm run prod
+```
+
+---
+
+## Environment Configuration
+
+This application uses environment variables for configuration:
+
+| File | Purpose |
+|------|---------|
+| `.env.local` | Local development (not committed to git) |
+| `.env.production` | Production build |
+
+**Available Variables:**
+
+```env
+# Backend API URL (server-side only)
+VHD_API_URL=http://localhost:8001
+
+# Application Port (for Docker)
+APP_PORT=3002
+```
+
+For production deployment, set the environment variable in your hosting platform (Vercel, Railway, etc.) instead of committing secrets to the repository.
+
+---
+
+## Docker Deployment
+
+### Build and Run
+
+```bash
+docker-compose up --build
+```
+
+Access the application at `http://localhost:3002` (or your configured `APP_PORT`).
+
+### Run in Background
+
+```bash
+docker-compose up -d --build
+```
+
+### Stop
+
+```bash
+docker-compose down
+```
+
+### Custom Port
+
+Edit `.env.production`:
+
+```env
+APP_PORT=8080
+```
+
+Or run directly:
+
+```bash
+APP_PORT=8080 docker-compose up --build
+```
+
 ---
 
 ## Project Structure
@@ -86,6 +153,11 @@ npm start
 ```text
 vhd_web_system/
 ├── app/
+│   ├── api/                 # API route proxies
+│   │   ├── health/
+│   │   │   └── route.ts     # Health check proxy
+│   │   └── predict/
+│   │       └── route.ts     # Prediction proxy
 │   ├── components/          # Reusable React components
 │   │   ├── ComparisonChart.tsx
 │   │   ├── ECGLine.tsx
@@ -100,6 +172,8 @@ vhd_web_system/
 │   ├── layout.tsx           # Main application layout
 │   └── page.tsx             # Home page
 ├── public/                  # Static assets
+├── .env.local               # Local environment variables
+├── .env.production          # Production environment variables
 ├── package.json
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -123,7 +197,14 @@ vhd_web_system/
 
 ## API Endpoints
 
-This application requires a backend API to function fully. Here are the endpoints used:
+This application uses API route proxies to hide the backend URL from the client. The frontend calls local routes which proxy requests to the backend:
+
+| Frontend Route | Backend Endpoint |
+|----------------|------------------|
+| `/api/health` | `VHD_API_URL/health` |
+| `/api/predict` | `VHD_API_URL/predict` |
+
+### Backend API Reference
 
 ### Health Check
 

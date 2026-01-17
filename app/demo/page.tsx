@@ -120,7 +120,7 @@ export default function DemoPage() {
     const checkHealth = async () => {
       setIsCheckingService(true);
       try {
-        const response = await fetch("http://localhost:8001/health", {
+        const response = await fetch("/api/health", {
           method: "GET",
           headers: {
             "accept": "application/json",
@@ -193,7 +193,7 @@ export default function DemoPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("http://localhost:8001/predict", {
+      const response = await fetch("/api/predict", {
         method: "POST",
         body: formData,
       });
@@ -313,7 +313,7 @@ export default function DemoPage() {
                       onClick={() => {
                         setIsCheckingService(true);
                         setServiceAvailable(null);
-                        fetch("http://localhost:8001/health", {
+                        fetch("/api/health", {
                           method: "GET",
                           headers: { "accept": "application/json" },
                         })

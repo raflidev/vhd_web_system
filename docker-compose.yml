@@ -1,0 +1,13 @@
+services:
+  vhd-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vhd-web
+    ports:
+      - "${APP_PORT:-3002}:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    restart: unless-stopped
