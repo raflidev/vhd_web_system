@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { InteractiveHeart, MagneticButton, TextReveal } from "./components/GSAPAnimations";
 
@@ -44,9 +45,9 @@ const StatCard = ({ value, label, description }: { value: string; label: string;
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="bg-white rounded-2xl p-10 shadow-sm border border-gray-100 text-center"
+    className="bg-white rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm border border-gray-100 text-center"
   >
-    <div className="text-4xl md:text-5xl font-bold text-red-600 mb-3">{value}</div>
+    <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-red-600 mb-3">{value}</div>
     <div className="text-lg font-semibold text-gray-800 mb-3">{label}</div>
     <div className="text-sm text-gray-500">{description}</div>
   </motion.div>
@@ -58,9 +59,9 @@ const IconCard = ({ icon, title, description }: { icon: React.ReactNode; title: 
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="flex gap-5 p-7 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+    className="flex gap-4 sm:gap-5 p-5 sm:p-7 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
   >
-    <div className="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0 text-red-600">
+    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0 text-red-600">
       {icon}
     </div>
     <div>
@@ -69,6 +70,106 @@ const IconCard = ({ icon, title, description }: { icon: React.ReactNode; title: 
     </div>
   </motion.div>
 );
+
+// Mobile Navigation Component
+const MobileNav = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navLinks = [
+    { href: "#what-is-vhd", label: "What is VHD" },
+    { href: "#risks", label: "Risks" },
+    { href: "#symptoms", label: "Symptoms" },
+    { href: "#detection", label: "Detection" },
+  ];
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-500 flex items-center justify-center">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          </div>
+          <span className="font-semibold text-gray-900 text-base sm:text-lg">VHD Detection</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+          <Link
+            href="/demo"
+            className="px-5 py-2.5 rounded-full bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors active:scale-95"
+          >
+            Try Demo
+          </Link>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label="Toggle menu"
+        >
+          <svg
+            className="w-6 h-6 text-gray-700"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            {isOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-t border-gray-100 overflow-hidden"
+          >
+            <div className="px-4 py-4 space-y-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="pt-2">
+                <Link
+                  href="/demo"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-center px-4 py-3 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition-colors active:scale-95"
+                >
+                  Try Demo
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
 
 export default function Home() {
   const fadeIn = {
@@ -80,38 +181,14 @@ export default function Home() {
   return (
     <main className="bg-white min-h-screen">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            </div>
-            <span className="font-semibold text-gray-900 text-lg">VHD Detection System</span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#what-is-vhd" className="text-gray-600 hover:text-gray-900 text-sm font-medium">What is VHD</a>
-            <a href="#risks" className="text-gray-600 hover:text-gray-900 text-sm font-medium">Risks</a>
-            <a href="#symptoms" className="text-gray-600 hover:text-gray-900 text-sm font-medium">Symptoms</a>
-            <a href="#detection" className="text-gray-600 hover:text-gray-900 text-sm font-medium">Detection</a>
-            <Link
-              href="/demo"
-              className="px-5 py-2.5 rounded-full bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
-            >
-              Try Demo
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <MobileNav />
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center pt-20 px-6">
         <div className="max-w-6xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
-            <div>
+            <div className="relative z-10">
               <motion.span
                 {...fadeIn}
                 className="inline-block px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-sm font-medium mb-6 border border-red-100"
@@ -141,25 +218,20 @@ export default function Home() {
               <motion.div
                 {...fadeIn}
                 transition={{ delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-col sm:flex-row gap-4 relative z-20"
               >
-                <MagneticButton
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium transition-all shadow-lg"
-                  onClick={() => window.location.href = '/demo'}
+                <Link
+                  href="/demo"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition-all shadow-lg shadow-red-500/25 active:scale-95"
                 >
-                  <span
-                    className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-red-500 text-white hover:bg-red-600"
-                    style={{ margin: '-1rem -2rem' }}
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                    </svg>
-                    Analyze Heart Sound
-                  </span>
-                </MagneticButton>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                  Analyze Heart Sound
+                </Link>
                 <a
                   href="#what-is-vhd"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-gray-200 text-gray-700 font-medium hover:border-gray-300 hover:bg-gray-50 transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-gray-200 text-gray-700 font-medium hover:border-gray-300 hover:bg-gray-50 transition-all active:scale-95"
                 >
                   Learn More
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,7 +246,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="flex justify-center lg:justify-end"
+              className="flex justify-center lg:justify-end order-first lg:order-last pointer-events-none lg:pointer-events-auto"
             >
               <InteractiveHeart />
             </motion.div>
@@ -185,18 +257,18 @@ export default function Home() {
       {/* What is VHD Section */}
       <section id="what-is-vhd" className="section bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-20">
+          <motion.div {...fadeIn} className="text-center mb-12 md:mb-20">
             <span className="text-red-500 font-medium text-sm uppercase tracking-wider">Understanding the Condition</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
               What is Valvular Heart Disease?
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed px-4 sm:px-0">
               Your heart has four valves that keep blood flowing in the right direction.
               When these valves are damaged or diseased, it affects your heart&apos;s ability to pump blood effectively.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {[
               {
                 name: "Aortic Valve",
@@ -229,7 +301,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+                className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100"
               >
                 <div className={`w-14 h-14 rounded-xl ${valve.color} flex items-center justify-center mb-5`}>
                   <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -244,9 +316,9 @@ export default function Home() {
           </div>
 
           {/* Types of VHD */}
-          <motion.div {...fadeIn} className="mt-20 bg-white rounded-2xl p-10 shadow-sm border border-gray-100">
+          <motion.div {...fadeIn} className="mt-12 md:mt-20 bg-white rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm border border-gray-100">
             <h3 className="text-xl font-semibold text-gray-900 mb-10 text-center">Common Types of Valve Problems</h3>
-            <div className="grid md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
               <div className="text-center">
                 <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,9 +354,9 @@ export default function Home() {
       {/* Why VHD is Dangerous Section */}
       <section id="risks" className="section">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-20">
+          <motion.div {...fadeIn} className="text-center mb-12 md:mb-20">
             <span className="text-red-500 font-medium text-sm uppercase tracking-wider">The Silent Threat</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
               Why VHD Deserves Attention
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -294,7 +366,7 @@ export default function Home() {
           </motion.div>
 
           {/* Statistics */}
-          <div className="grid md:grid-cols-3 gap-8 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12 md:mb-20">
             <StatCard
               value="2.5%"
               label="Global Prevalence"
@@ -313,7 +385,7 @@ export default function Home() {
           </div>
 
           {/* Comparison Chart */}
-          <motion.div {...fadeIn} className="bg-gray-50 rounded-2xl p-10">
+          <motion.div {...fadeIn} className="bg-gray-50 rounded-2xl p-5 sm:p-8 md:p-10">
             <h3 className="text-xl font-semibold text-gray-900 mb-10 text-center">
               VHD vs Other Cardiovascular Conditions
             </h3>
@@ -332,8 +404,8 @@ export default function Home() {
                   transition={{ delay: index * 0.1 }}
                   className={`${condition.highlight ? "bg-white shadow-sm rounded-xl p-5 border-l-4 border-red-500" : "px-2"}`}
                 >
-                  <div className="flex justify-between items-center mb-3">
-                    <span className={`font-medium ${condition.highlight ? "text-gray-900" : "text-gray-600"}`}>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-1 sm:gap-0">
+                    <span className={`font-medium text-sm sm:text-base ${condition.highlight ? "text-gray-900" : "text-gray-600"}`}>
                       {condition.name}
                       {condition.highlight && (
                         <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Focus Area</span>
@@ -365,9 +437,9 @@ export default function Home() {
       {/* Symptoms & Risk Factors */}
       <section id="symptoms" className="section bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-20">
+          <motion.div {...fadeIn} className="text-center mb-12 md:mb-20">
             <span className="text-red-500 font-medium text-sm uppercase tracking-wider">Know the Signs</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
               Early Symptoms & Risk Factors
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -375,7 +447,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
             {/* Symptoms */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-8 flex items-center gap-3">
@@ -450,13 +522,13 @@ export default function Home() {
       {/* Why Early Detection Matters */}
       <section id="detection" className="section">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 md:gap-20 items-center">
             <motion.div {...fadeIn}>
               <span className="text-red-500 font-medium text-sm uppercase tracking-wider">Prevention is Key</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6 md:mb-8">
                 Why Early Detection Matters
               </h2>
-              <p className="text-gray-600 text-lg mb-10 leading-relaxed">
+              <p className="text-gray-600 text-base sm:text-lg mb-8 md:mb-10 leading-relaxed">
                 When VHD is caught early, patients have more treatment options and better outcomes.
                 Early intervention can prevent heart failure, reduce the need for emergency surgery,
                 and significantly improve quality of life.
@@ -483,7 +555,7 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <span className="text-gray-700 text-lg">{item}</span>
+                    <span className="text-gray-700 text-base sm:text-lg">{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -493,7 +565,7 @@ export default function Home() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-3xl p-8 md:p-12"
+              className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12"
             >
               <div className="text-center">
                 <div className="w-20 h-20 rounded-2xl bg-white shadow-lg flex items-center justify-center mx-auto mb-6">
@@ -510,7 +582,7 @@ export default function Home() {
                 </p>
                 <a
                   href="#learn-more"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95"
                 >
                   Talk to a Doctor
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -528,7 +600,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeIn} className="text-center mb-16">
             <span className="text-red-500 font-medium text-sm uppercase tracking-wider">Evidence-Based</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">
               Trusted Sources
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -536,13 +608,13 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
             >
               <div className="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center mb-5">
                 <svg className="w-7 h-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -558,7 +630,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
             >
               <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center mb-5">
                 <svg className="w-7 h-7 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -574,7 +646,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
             >
               <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center mb-5">
                 <svg className="w-7 h-7 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -589,7 +661,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 bg-gray-900 text-white">
+      <footer className="py-10 sm:py-16 px-4 sm:px-6 bg-gray-900 text-white">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
             <div className="flex items-center gap-3">
@@ -600,7 +672,7 @@ export default function Home() {
               </div>
               <span className="font-semibold text-lg">VHD Detection System</span>
             </div>
-            <div className="flex gap-8 text-sm">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm">
               <a href="#what-is-vhd" className="text-gray-400 hover:text-white transition-colors">About VHD</a>
               <a href="#risks" className="text-gray-400 hover:text-white transition-colors">Risks</a>
               <a href="#symptoms" className="text-gray-400 hover:text-white transition-colors">Symptoms</a>
@@ -610,7 +682,7 @@ export default function Home() {
 
           {/* Medical Disclaimer */}
           <div className="border-t border-gray-800 pt-10">
-            <div className="bg-gray-800/50 rounded-xl p-8 mb-8">
+            <div className="bg-gray-800/50 rounded-xl p-5 sm:p-8 mb-8">
               <h4 className="font-medium text-gray-300 mb-2 flex items-center gap-2">
                 <svg className="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -630,6 +702,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </main>
+    </main >
   );
 }
