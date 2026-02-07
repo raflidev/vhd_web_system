@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useRef, useCallback, useEffect } from "react";
+import WaveformPlayer from "../components/WaveformPlayer";
 
 // Types
 interface PredictionResult {
@@ -25,6 +26,15 @@ interface HealthCheckResult {
   service: string;
   version: string;
 }
+
+// Example files
+const exampleFiles = [
+  { name: "Aortic Stenosis", filename: "New_AS_029.wav", type: "AS" },
+  { name: "Mitral Regurgitation", filename: "New_MR_024.wav", type: "MR" },
+  { name: "Mitral Stenosis", filename: "New_MS_033.wav", type: "MS" },
+  { name: "Mitral Valve Prolapse", filename: "New_MVP_017.wav", type: "MVP" },
+  { name: "Normal Heart", filename: "New_N_020.wav", type: "N" },
+];
 
 // Class info mapping
 const classInfo: Record<string, { name: string; description: string; color: string; bgColor: string }> = {
@@ -172,10 +182,32 @@ export default function DemoPage() {
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleExampleDragStart = (e: React.DragEvent, filename: string) => {
+    e.dataTransfer.setData("application/vhd-sound-example", filename);
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
+
+    // Check for dragged example file
+    const exampleFilename = e.dataTransfer.getData("application/vhd-sound-example");
+    if (exampleFilename) {
+      try {
+        const response = await fetch(`/sound/${exampleFilename}`);
+        if (!response.ok) throw new Error("Failed to load example file");
+
+        const blob = await response.blob();
+        const file = new File([blob], exampleFilename, { type: "audio/wav" });
+        handleFileSelect(file);
+      } catch (err) {
+        setError("Failed to load example file");
+        console.error(err);
+      }
+      return;
+    }
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileSelect(e.dataTransfer.files[0]);
@@ -399,6 +431,14 @@ export default function DemoPage() {
                         >
                           Remove file
                         </button>
+                        <div className="w-full mt-4">
+                          <WaveformPlayer
+                            file={file}
+                            height={60}
+                            waveColor="#4ade80"
+                            progressColor="#16a34a"
+                          />
+                        </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center">
@@ -464,6 +504,44 @@ export default function DemoPage() {
                       </>
                     )}
                   </button>
+
+                  {/* Example Files Section */}
+                  <div className="mt-8 pt-8 border-t border-gray-100">
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                      Try with Example Sounds
+                    </h3>
+                    <div className="grid gap-3">
+                      {exampleFiles.map((example) => (
+                        <div
+                          key={example.filename}
+                          draggable
+                          onDragStart={(e) => handleExampleDragStart(e, example.filename)}
+                          className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors cursor-grab active:cursor-grabbing"
+                        >
+                          <div className={`w-8 h-8 rounded-lg ${classInfo[example.type].bgColor} flex items-center justify-center flex-shrink-0 text-white font-bold text-xs`}>
+                            {example.type}
+                          </div>
+                          <div className="flex-1 min-w-0 pr-4">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {example.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              Drag to analyze box
+                            </p>
+                          </div>
+                          <div className="flex-1 min-w-[200px]">
+                            <WaveformPlayer
+                              url={`/sound/${example.filename}`}
+                              height={32}
+                              waveColor={classInfo[example.type].color.replace("text-", "#").replace("-600", "500") || "#cbd5e1"}
+                              progressColor="#ef4444"
+                              minPxPerSec={10}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </>
               ) : (
                 /* Results Section */
@@ -599,6 +677,6 @@ export default function DemoPage() {
           </motion.div>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
