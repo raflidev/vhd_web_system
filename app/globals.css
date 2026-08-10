@@ -1,32 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "@fontsource-variable/source-sans-3";
+@import "@fontsource-variable/source-serif-4";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
 @import "tailwindcss";
 
-@theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #1a1a2e;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-:root {
-  /* Medical Colors */
-  --medical-red: #e63946;
-  --medical-red-light: #fef2f2;
-  --medical-blue: #1d4ed8;
-  --medical-blue-light: #eff6ff;
-  --medical-teal: #0d9488;
-  --medical-teal-light: #f0fdfa;
-
-  /* Neutrals */
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
+/* Tema klasik institusional medis: putih bersih, navy klinis, serif display */
+@theme {
+  --color-ink: #24313d;
+  --color-ink-dim: #55636f;
+  --color-ink-faint: #8a97a3;
+  --color-bg: #fbfaf7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f3f1eb;
+  --color-hairline: #e4e0d6;
+  --color-accent: #175e7d;
+  --color-accent-bright: #2b7ba0;
+  --color-accent-deep: #11495f;
+  --color-accent-tint: #eaf3f7;
+  --font-sans: "Source Sans 3 Variable", system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 * {
@@ -38,45 +31,24 @@ html {
 }
 
 body {
-  background: #ffffff;
-  color: var(--gray-800);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--gray-100);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--gray-300);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-400);
-}
-
-/* Selection */
 ::selection {
-  background: rgba(230, 57, 70, 0.15);
-  color: var(--gray-900);
+  background: rgba(23, 94, 125, 0.16);
+  color: var(--color-ink);
 }
 
-/* Focus styles */
 :focus-visible {
-  outline: 2px solid var(--medical-blue);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-/* Smooth transitions */
 a,
 button {
   transition: all 0.2s ease;
@@ -88,62 +60,34 @@ button {
   cursor: pointer;
 }
 
-/* Section spacing */
-.section {
-  padding: 8rem 1.5rem;
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #fbfaf7;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d4c9;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bdb7a9;
 }
 
-@media (min-width: 768px) {
-  .section {
-    padding: 10rem 2rem;
+/* Garis ECG halus untuk hero, diwarnai aksen */
+@keyframes ecg-dash {
+  to {
+    stroke-dashoffset: -240;
   }
 }
-
-@media (min-width: 1024px) {
-  .section {
-    padding: 12rem 3rem;
-  }
+.ecg-anim {
+  animation: ecg-dash 2.4s linear infinite;
 }
 
-/* Subtle animation for heart */
-@keyframes gentle-pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.8;
+@media (prefers-reduced-motion: reduce) {
+  .ecg-anim {
+    animation: none;
   }
-
-  50% {
-    transform: scale(1.02);
-    opacity: 1;
+  html {
+    scroll-behavior: auto;
   }
-}
-
-.gentle-pulse {
-  animation: gentle-pulse 4s ease-in-out infinite;
-}
-
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--medical-red) 0%, #c51e3a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }

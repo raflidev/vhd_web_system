@@ -18,7 +18,7 @@ export default function SoundWave({ barCount = 20, className = "" }: SoundWavePr
         return (
           <motion.div
             key={i}
-            className="w-1 md:w-1.5 rounded-full bg-gradient-to-t from-red-600 via-purple-500 to-blue-500"
+            className="w-1 md:w-1.5 rounded-xl bg-gradient-to-t from-red-600 via-purple-500 to-blue-500"
             initial={{ height: 10 }}
             animate={{
               height: [10, randomHeight, 15, randomHeight * 0.7, 10],

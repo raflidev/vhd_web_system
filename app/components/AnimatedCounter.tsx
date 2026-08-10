@@ -56,7 +56,7 @@ export default function AnimatedCounter({
       transition={{ duration: 0.6 }}
       className="text-center"
     >
-      <div className="metric-value gradient-text">
+      <div className="metric-value text-red-600">
         {prefix}
         {count}
         {suffix}

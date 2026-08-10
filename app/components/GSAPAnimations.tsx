@@ -114,7 +114,7 @@ export const InteractiveHeart = () => {
           className="absolute inset-0 flex items-center justify-center"
         >
           <div
-            className="w-40 h-40 md:w-48 md:h-48 rounded-full border-2"
+            className="w-40 h-40 md:w-48 md:h-48 rounded-xl border-2"
             style={{ borderColor: "rgba(220, 38, 38, 0.3)" }}
           />
         </div>
@@ -188,7 +188,7 @@ const FloatingParticles = () => {
           ref={(el) => {
             if (el) particlesRef.current[i] = el;
           }}
-          className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full"
+          className="absolute top-1/2 left-1/2 w-2 h-2 rounded-xl"
           style={{
             backgroundColor: i % 2 === 0 ? "#dc2626" : "#3b82f6",
             opacity: 0.5,

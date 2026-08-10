@@ -19,9 +19,9 @@ function TimelineItem({ title, description, icon, delay = 0 }: TimelineItemProps
       className="flex flex-col items-center text-center px-4"
     >
       {/* Icon container */}
-      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500/20 to-blue-500/20 flex items-center justify-center mb-4 relative">
+      <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-red-500/20 to-blue-500/20 flex items-center justify-center mb-4 relative">
         {/* Pulse ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-red-500/30 pulse-ring" />
+        <div className="absolute inset-0 rounded-xl border-2 border-red-500/30 pulse-ring" />
         <div className="text-white">{icon}</div>
       </div>
 

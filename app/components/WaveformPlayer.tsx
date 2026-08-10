@@ -105,7 +105,7 @@ export default function WaveformPlayer({
     <div className={`flex items-center gap-4 ${className}`}>
       <button
         onClick={handlePlayPause}
-        className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isPlaying ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+        className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isPlaying ? "bg-accent/15 text-accent" : "bg-surface-2 text-ink-dim hover:bg-gray-200"
           }`}
         disabled={!isReady}
       >
@@ -124,7 +124,7 @@ export default function WaveformPlayer({
         <div ref={containerRef} className="w-full" />
       </div>
 
-      <div className="text-xs font-medium text-gray-500 tabular-nums w-12 text-right flex-shrink-0">
+      <div className="text-xs font-medium text-ink-faint tabular-nums w-12 text-right flex-shrink-0">
         {formatTime(isPlaying ? currentTime : duration)}
       </div>
     </div>

@@ -47,13 +47,13 @@ const classInfo: Record<string, { name: string; description: string; color: stri
   MR: {
     name: "Mitral Regurgitation",
     description: "Backward flow through the mitral valve",
-    color: "text-blue-600",
+    color: "text-accent",
     bgColor: "bg-blue-500",
   },
   MS: {
     name: "Mitral Stenosis",
     description: "Narrowing of the mitral valve opening",
-    color: "text-purple-600",
+    color: "text-accent",
     bgColor: "bg-purple-500",
   },
   MVP: {
@@ -90,25 +90,25 @@ const ProbabilityBar = ({
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className={`p-4 rounded-xl ${isHighest ? "bg-gray-100 ring-2 ring-offset-2 ring-gray-300" : "bg-gray-50"}`}
+      className={`p-4 rounded-xl ${isHighest ? "bg-surface-2 ring-2 ring-offset-2 ring-gray-300" : "bg-bg"}`}
     >
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-3">
-          <span className={`font-bold text-lg ${isHighest ? classInfo[label].color : "text-gray-700"}`}>
+          <span className={`font-bold text-lg ${isHighest ? classInfo[label].color : "text-ink-dim"}`}>
             {label}
           </span>
-          <span className="text-sm text-gray-500">{fullName}</span>
+          <span className="text-sm text-ink-faint">{fullName}</span>
         </div>
-        <span className={`font-semibold ${isHighest ? classInfo[label].color : "text-gray-600"}`}>
+        <span className={`font-semibold ${isHighest ? classInfo[label].color : "text-ink-dim"}`}>
           {percentage}%
         </span>
       </div>
-      <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-3 bg-gray-200 rounded-xl overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${probability * 100}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className={`h-full rounded-full ${isHighest ? color : "bg-gray-400"}`}
+          className={`h-full rounded-xl ${isHighest ? color : "bg-gray-400"}`}
         />
       </div>
     </motion.div>
@@ -261,22 +261,22 @@ export default function DemoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-bg">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-hairline">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
             </div>
-            <span className="font-semibold text-gray-900 text-lg">VHD Detection System</span>
+            <span className="font-semibold text-ink text-lg">VHD Detection System</span>
           </Link>
 
           <Link
             href="/"
-            className="text-gray-600 hover:text-gray-900 text-sm font-medium flex items-center gap-2"
+            className="text-ink-dim hover:text-ink text-sm font-medium flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -295,13 +295,13 @@ export default function DemoPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-sm font-medium mb-4 border border-red-100">
+            <span className="inline-block px-4 py-1.5 rounded-xl bg-accent/10 text-accent text-sm font-medium mb-4 border border-accent/30">
               AI-Powered Analysis
             </span>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink mb-4">
               Heart Sound Analysis
             </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            <p className="text-ink-dim max-w-2xl mx-auto text-lg">
               Upload a heart sound recording to detect potential valve abnormalities using our deep learning model.
             </p>
           </motion.div>
@@ -328,11 +328,11 @@ export default function DemoPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mb-8 p-6 rounded-xl bg-red-50 border-2 border-red-200"
+                className="mb-8 p-6 rounded-xl bg-accent/10 border-2 border-accent"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414" />
                     </svg>
                   </div>
@@ -365,7 +365,7 @@ export default function DemoPage() {
                             setIsCheckingService(false);
                           });
                       }}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 text-red-700 font-medium hover:bg-red-200 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/15 text-red-700 font-medium hover:bg-red-200 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -384,7 +384,7 @@ export default function DemoPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8"
+              className="bg-surface rounded-2xl shadow-sm border border-hairline p-8 mb-8"
             >
               {!result ? (
                 <>
@@ -398,10 +398,10 @@ export default function DemoPage() {
                     className={`
                     relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all
                     ${dragActive
-                        ? "border-red-400 bg-red-50"
+                        ? "border-red-400 bg-accent/10"
                         : file
                           ? "border-green-400 bg-green-50"
-                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                          : "border-gray-300 hover:border-gray-400 hover:bg-bg"
                       }
                   `}
                   >
@@ -415,19 +415,19 @@ export default function DemoPage() {
 
                     {file ? (
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                          <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="w-16 h-16 rounded-xl bg-emerald-400/10 flex items-center justify-center mb-4">
+                          <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
-                        <p className="font-medium text-gray-900 mb-1">{file.name}</p>
-                        <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                        <p className="font-medium text-ink mb-1">{file.name}</p>
+                        <p className="text-sm text-ink-faint">{(file.size / 1024).toFixed(1)} KB</p>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleReset();
                           }}
-                          className="mt-4 text-sm text-red-600 hover:text-red-700 font-medium"
+                          className="mt-4 text-sm text-accent hover:text-red-700 font-medium"
                         >
                           Remove file
                         </button>
@@ -442,18 +442,18 @@ export default function DemoPage() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="w-16 h-16 rounded-xl bg-surface-2 flex items-center justify-center mb-4">
+                          <svg className="w-8 h-8 text-ink-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                           </svg>
                         </div>
-                        <p className="font-medium text-gray-900 mb-1">
+                        <p className="font-medium text-ink mb-1">
                           Drop your audio file here
                         </p>
-                        <p className="text-sm text-gray-500 mb-4">
+                        <p className="text-sm text-ink-faint mb-4">
                           or click to browse
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-ink-faint">
                           Supported formats: WAV, MP3, M4A, OGG
                         </p>
                       </div>
@@ -467,9 +467,9 @@ export default function DemoPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3"
+                        className="mt-4 p-4 rounded-xl bg-accent/10 border border-accent flex items-start gap-3"
                       >
-                        <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-sm text-red-700">{error}</p>
@@ -506,8 +506,8 @@ export default function DemoPage() {
                   </button>
 
                   {/* Example Files Section */}
-                  <div className="mt-8 pt-8 border-t border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                  <div className="mt-8 pt-8 border-t border-hairline">
+                    <h3 className="text-sm font-semibold text-ink-faint uppercase tracking-wider mb-4">
                       Try with Example Sounds
                     </h3>
                     <div className="grid gap-3">
@@ -516,16 +516,16 @@ export default function DemoPage() {
                           key={example.filename}
                           draggable
                           onDragStart={(e) => handleExampleDragStart(e, example.filename)}
-                          className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors cursor-grab active:cursor-grabbing"
+                          className="flex items-center gap-4 p-3 rounded-lg bg-bg border border-hairline hover:border-accent hover:bg-accent/10 transition-colors cursor-grab active:cursor-grabbing"
                         >
                           <div className={`w-8 h-8 rounded-lg ${classInfo[example.type].bgColor} flex items-center justify-center flex-shrink-0 text-white font-bold text-xs`}>
                             {example.type}
                           </div>
                           <div className="flex-1 min-w-0 pr-4">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-medium text-ink truncate">
                               {example.name}
                             </p>
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-ink-faint truncate">
                               Drag to analyze box
                             </p>
                           </div>
@@ -561,24 +561,24 @@ export default function DemoPage() {
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
                     </motion.div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Analysis Complete</h2>
-                    <p className="text-gray-500">File: {result.filename}</p>
+                    <h2 className="text-2xl font-bold text-ink mb-2">Analysis Complete</h2>
+                    <p className="text-ink-faint">File: {result.filename}</p>
                   </div>
 
                   {/* Primary Result */}
-                  <div className={`rounded-2xl p-6 mb-8 ${result.prediction === "N" ? "bg-emerald-50 border-2 border-emerald-200" : "bg-red-50 border-2 border-red-200"}`}>
+                  <div className={`rounded-2xl p-6 mb-8 ${result.prediction === "N" ? "bg-emerald-50 border-2 border-emerald-200" : "bg-accent/10 border-2 border-accent"}`}>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Detected Condition</p>
+                        <p className="text-sm font-medium text-ink-faint mb-1">Detected Condition</p>
                         <h3 className={`text-2xl font-bold ${classInfo[result.prediction].color}`}>
                           {classInfo[result.prediction].name}
                         </h3>
-                        <p className="text-gray-600 mt-1">
+                        <p className="text-ink-dim mt-1">
                           {classInfo[result.prediction].description}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-gray-500 mb-1">Confidence</p>
+                        <p className="text-sm font-medium text-ink-faint mb-1">Confidence</p>
                         <p className={`text-3xl font-bold ${classInfo[result.prediction].color}`}>
                           {(result.confidence * 100).toFixed(1)}%
                         </p>
@@ -588,7 +588,7 @@ export default function DemoPage() {
 
                   {/* All Probabilities */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">All Class Probabilities</h3>
+                    <h3 className="text-lg font-semibold text-ink mb-4">All Class Probabilities</h3>
                     <div className="space-y-3">
                       {getSortedProbabilities(result.probabilities).map(({ label, probability }) => (
                         <ProbabilityBar
@@ -619,7 +619,7 @@ export default function DemoPage() {
                   <div className="flex gap-4">
                     <button
                       onClick={handleReset}
-                      className="flex-1 py-4 rounded-xl font-semibold text-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                      className="flex-1 py-4 rounded-xl font-semibold text-lg bg-surface-2 text-ink-dim hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
                     >
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -639,38 +639,38 @@ export default function DemoPage() {
             transition={{ delay: 0.2 }}
             className="grid md:grid-cols-3 gap-6"
           >
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-surface rounded-xl p-6 shadow-sm border border-hairline">
+              <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Audio Format</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-ink mb-2">Audio Format</h3>
+              <p className="text-sm text-ink-dim">
                 Best results with clear WAV recordings of heart sounds taken with a digital stethoscope.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-surface rounded-xl p-6 shadow-sm border border-hairline">
+              <div className="w-12 h-12 rounded-xl bg-accent/15 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">AI Model</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-ink mb-2">AI Model</h3>
+              <p className="text-sm text-ink-dim">
                 Deep learning CNN trained on thousands of validated phonocardiogram samples.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-surface rounded-xl p-6 shadow-sm border border-hairline">
               <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">5 Conditions</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-ink mb-2">5 Conditions</h3>
+              <p className="text-sm text-ink-dim">
                 Detects AS, MR, MS, MVP conditions and Normal heart sounds with high accuracy.
               </p>
             </div>
