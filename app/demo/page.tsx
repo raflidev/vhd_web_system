@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import { computeMFCC } from "../../lib/mfcc";
+import Nav from "../components/Nav";
 import WaveformPlayer from "../components/WaveformPlayer";
 
-/* ── Konstanta model ── */
+/* ─── Konstanta model ─── */
 const MODEL_URL = "/models/vhd/model.json";
 const SR = 22050;
 const MAX_FRAMES = 100;
@@ -16,10 +16,10 @@ type ClassLabel = (typeof CLASSES)[number];
 
 const classInfo: Record<ClassLabel, { name: string; description: string; bar: string }> = {
   AS: { name: "Aortic Stenosis", description: "Penyempitan bukaan katup aorta", bar: "bg-rose-500" },
-  MR: { name: "Mitral Regurgitation", description: "Aliran balik melalui katup mitral", bar: "bg-blue-500" },
-  MS: { name: "Mitral Stenosis", description: "Penyempitan bukaan katup mitral", bar: "bg-purple-500" },
+  MR: { name: "Mitral Regurgitation", description: "Aliran balik melalui katup mitral", bar: "bg-sky-500" },
+  MS: { name: "Mitral Stenosis", description: "Penyempitan bukaan katup mitral", bar: "bg-violet-500" },
   MVP: { name: "Mitral Valve Prolapse", description: "Daun katup menonjol ke atrium kiri", bar: "bg-amber-500" },
-  N: { name: "Normal", description: "Tidak ditemukan kelainan katup", bar: "bg-emerald-500" },
+  N: { name: "Normal", description: "Tidak ditemukan kelainan katup", bar: "bg-teal-500" },
 };
 
 const examples: { label: ClassLabel; file: string }[] = [
@@ -38,7 +38,31 @@ interface Result {
   file: string;
 }
 
+/* ─── Panel instrumen klasik: header baris kecil + isi ─── */
+function Panel({
+  title,
+  right,
+  children,
+}: {
+  title: string;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border border-hairline bg-surface">
+      <div className="flex items-center justify-between border-b border-hairline px-5 py-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-faint">
+          {title}
+        </span>
+        {right}
+      </div>
+      <div className="px-6 py-6 sm:px-8 sm:py-8">{children}</div>
+    </div>
+  );
+}
+
 export default function DemoPage() {
+  const reduce = !!useReducedMotion();
   const [model, setModel] = useState<tf.LayersModel | null>(null);
   const [modelState, setModelState] = useState<"loading" | "ready" | "error">("loading");
   const [file, setFile] = useState<File | null>(null);
@@ -63,10 +87,7 @@ export default function DemoPage() {
       } catch (e) {
         if (cancelled) return;
         setModelState("error");
-        setError(
-          "Gagal memuat model di browser: " +
-            (e instanceof Error ? e.message : String(e))
-        );
+        setError("Gagal memuat model di browser: " + (e instanceof Error ? e.message : String(e)));
       }
     })();
     return () => {
@@ -105,13 +126,7 @@ export default function DemoPage() {
       input.dispose();
       out.dispose();
       const idx = probs.indexOf(Math.max(...probs));
-      return {
-        top: CLASSES[idx],
-        probs,
-        mfccMs: t1 - t0,
-        inferMs: t2 - t1,
-        file: fileName,
-      };
+      return { top: CLASSES[idx], probs, mfccMs: t1 - t0, inferMs: t2 - t1, file: fileName };
     },
     [model]
   );
@@ -170,11 +185,12 @@ export default function DemoPage() {
       const resp = await fetch(ex.file);
       if (!resp.ok) throw new Error("HTTP " + resp.status);
       const blob = await resp.blob();
-      const f = new File([blob], ex.file.split("/").pop() || "sample.wav", { type: "audio/wav" });
+      const name = ex.file.split("/").pop() || "sample.wav";
+      const f = new File([blob], name, { type: "audio/wav" });
       setFile(f);
       setResult(null);
       setError(null);
-      runAudio(f, ex.file.split("/").pop() || "");
+      runAudio(f, name);
     } catch (e) {
       setError("Gagal memuat sample: " + (e instanceof Error ? e.message : String(e)));
     }
@@ -193,81 +209,99 @@ export default function DemoPage() {
         .sort((a, b) => b.p - a.p)
     : [];
 
-  const statusPill = {
-    loading: { dot: "bg-ink-faint", text: "Memuat model...", cls: "" },
-    ready: { dot: "bg-accent", text: "Model siap · LSTM 128 → 64 → 5", cls: " border-accent/40 bg-accent-tint text-accent-deep" },
-    error: { dot: "bg-red-600", text: "Gagal memuat model", cls: " border-red-300 bg-red-50 text-red-800" },
-  }[modelState];
+  const statusDot =
+    modelState === "ready" ? "bg-accent" : modelState === "error" ? "bg-red-600" : "bg-ink-faint";
+  const statusText =
+    modelState === "ready"
+      ? "Model ready · LSTM 128 → 64 → 5 · running locally"
+      : modelState === "error"
+        ? "Model failed to load"
+        : "Loading model...";
 
   return (
     <main className="min-h-screen bg-bg">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-hairline">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            </div>
-            <span className="font-semibold text-ink text-lg">VHD Detection System</span>
-          </Link>
-          <Link href="/" className="text-ink-dim hover:text-ink text-sm font-medium flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Home
-          </Link>
-        </div>
-      </nav>
+      <Nav />
 
-      <div className="pt-24 pb-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-            <span className="inline-block px-4 py-1.5 rounded-xl bg-accent/10 text-accent text-sm font-medium mb-4 border border-accent/30">
-              In-browser inference
-            </span>
-            <h1 className="font-serif text-3xl md:text-4xl font-semibold text-ink mb-4">Heart Sound Analysis</h1>
-            <p className="text-ink-dim max-w-2xl mx-auto text-lg">
-              Unggah rekaman bunyi jantung untuk mendeteksi kelainan katup. Model LSTM berjalan sepenuhnya di browser Anda
-              via TensorFlow.js — tidak ada audio yang dikirim ke server.
-            </p>
-          </motion.div>
-
-          <div className="flex justify-center mb-8">
-            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-hairline text-sm font-medium text-ink-dim bg-surface${statusPill.cls}`}>
-              <span className={`w-2 h-2 rounded-full ${statusPill.dot}`} />
-              {statusPill.text}
-            </span>
-          </div>
-
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm"
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+      {/* Hero: klasik, centered, ECG halus */}
+      <section className="border-b border-hairline">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-28 text-center sm:px-6 md:pt-32">
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-surface rounded-xl shadow-sm border border-hairline p-8 mb-8"
+            transition={{ duration: 0.5 }}
+            className="text-xs font-semibold uppercase tracking-[0.22em] text-accent"
           >
-            {!result ? (
-              <>
+            In-browser inference
+          </motion.p>
+          <motion.h1
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.08 }}
+            className="mx-auto mt-5 max-w-2xl font-serif text-4xl font-semibold leading-[1.12] tracking-tight text-ink sm:text-5xl"
+          >
+            Heart sound analysis
+          </motion.h1>
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.16 }}
+            className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-ink-dim"
+          >
+            Unggah rekaman bunyi jantung untuk mendeteksi kelainan katup. Model LSTM
+            berjalan sepenuhnya di browser Anda — audio tidak dikirim ke server mana pun.
+          </motion.p>
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.24 }}
+            className="mx-auto mt-10 max-w-xl border border-hairline bg-surface px-5 py-3"
+          >
+            <span className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-faint">
+              <span className={`inline-block h-1.5 w-1.5 ${statusDot}`} aria-hidden="true" />
+              {statusText}
+            </span>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Konten utama */}
+      <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="mb-8 border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="space-y-10">
+          {/* Panel input */}
+          {!result ? (
+            <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+              <Panel
+                title="Input audio"
+                right={
+                  <span className="flex items-center gap-2 text-[11px] font-medium text-ink-faint">
+                    <span className={`inline-block h-1.5 w-1.5 ${isRunning ? "bg-accent" : statusDot}`} aria-hidden="true" />
+                    {isRunning ? "Processing..." : "WAV · MP3 · OGG · FLAC · M4A"}
+                  </span>
+                }
+              >
                 <div
-                  onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
+                  onDragEnter={(e) => {
+                    e.preventDefault();
+                    setDragActive(true);
+                  }}
                   onDragLeave={() => setDragActive(false)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
+                  className={`cursor-pointer border-2 border-dashed px-8 py-12 text-center transition-colors ${
                     dragActive ? "border-accent bg-accent-tint" : "border-hairline hover:border-accent/60"
                   }`}
                 >
@@ -280,100 +314,120 @@ export default function DemoPage() {
                       if (e.target.files?.[0]) handleFileSelect(e.target.files[0]);
                     }}
                   />
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-accent/10 flex items-center justify-center">
-                    <svg className="w-7 h-7 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                    </svg>
-                  </div>
-                  <p className="text-ink font-semibold text-lg mb-1">Klik atau taruh file audio di sini</p>
-                  <p className="text-ink-faint text-sm">WAV, MP3, OGG, FLAC, M4A · mono atau stereo</p>
+                  <p className="font-serif text-xl font-semibold text-ink">
+                    Click or drop an audio file
+                  </p>
+                  <p className="mt-2 text-sm text-ink-faint">
+                    Rekaman bunyi jantung, mono atau stereo
+                  </p>
                 </div>
 
-                <div className="mt-6">
-                  <p className="text-xs font-medium uppercase tracking-wider text-ink-faint mb-3">atau coba sample</p>
+                <div className="mt-6 border-t border-hairline pt-5">
+                  <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-faint">
+                    Or try a sample
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {examples.map((ex) => (
                       <button
                         key={ex.label}
                         onClick={() => handleExample(ex)}
                         disabled={modelState !== "ready" || isRunning}
-                        className="px-4 py-2 rounded-lg border border-hairline text-sm font-medium text-ink-dim hover:border-accent hover:text-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="rounded-[6px] border border-hairline px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         Sample {ex.label} · {classInfo[ex.label].name}
                       </button>
                     ))}
                   </div>
                 </div>
-              </>
-            ) : (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="flex items-start justify-between gap-4 mb-6">
+              </Panel>
+            </motion.div>
+          ) : (
+            /* Panel hasil */
+            <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+              <Panel
+                title="Result"
+                right={
+                  <span className="flex items-center gap-2 text-[11px] font-medium text-ink-faint">
+                    <span className="inline-block h-1.5 w-1.5 bg-accent" aria-hidden="true" />
+                    100% in-browser
+                  </span>
+                }
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-hairline pb-6">
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-ink-faint mb-1">Hasil analisis</p>
-                    <h2 className="font-serif text-2xl font-semibold text-ink">
-                      {classInfo[result.top].name}{" "}
-                      <span className="text-accent">({result.top})</span>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-faint">
+                      Predicted condition
+                    </p>
+                    <h2 className="mt-2 font-serif text-3xl font-semibold leading-tight text-ink">
+                      {classInfo[result.top].name}
+                      <span className="text-accent"> ({result.top})</span>
                     </h2>
-                    <p className="text-ink-dim text-sm">{classInfo[result.top].description}</p>
+                    <p className="mt-1 text-sm text-ink-dim">{classInfo[result.top].description}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-serif text-3xl font-bold text-accent-deep">
+                    <p className="font-serif text-4xl font-semibold text-accent-deep">
                       {(result.probs[CLASSES.indexOf(result.top)] * 100).toFixed(1)}%
                     </p>
-                    <p className="text-xs text-ink-faint">keyakinan</p>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-ink-faint">
+                      Confidence
+                    </p>
                   </div>
                 </div>
 
                 {file && (
-                  <div className="mb-6 rounded-xl border border-hairline p-4 bg-bg">
+                  <div className="mt-6 border border-hairline bg-bg p-4">
                     <WaveformPlayer file={file} waveColor="#cbd5e1" progressColor="#175e7d" />
                   </div>
                 )}
 
-                <div className="space-y-3 mb-6">
+                <div className="mt-6 space-y-3">
                   {sorted.map(({ label, p }, i) => (
-                    <div key={label} className={`flex items-center gap-4 p-3 rounded-xl border ${i === 0 ? "border-accent/40 bg-accent-tint" : "border-hairline bg-bg"}`}>
-                      <div className="w-12 shrink-0">
-                        <span className={`font-bold ${i === 0 ? "text-accent-deep" : "text-ink-dim"}`}>{label}</span>
+                    <div key={label} className="flex items-center gap-4">
+                      <span
+                        className={`w-10 shrink-0 text-sm font-bold ${
+                          i === 0 ? "text-accent-deep" : "text-ink-dim"
+                        }`}
+                      >
+                        {label}
+                      </span>
+                      <div className="h-2.5 flex-1 bg-surface-2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.max(p * 100, 0.5)}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className={`h-full ${classInfo[label].bar}`}
+                        />
                       </div>
-                      <div className="flex-1">
-                        <div className="h-2.5 bg-surface-2 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.max(p * 100, 0.5)}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={`h-full rounded-full ${classInfo[label].bar}`}
-                          />
-                        </div>
-                      </div>
-                      <div className="w-14 shrink-0 text-right">
-                        <span className={`font-mono text-sm ${i === 0 ? "text-accent-deep font-semibold" : "text-ink-dim"}`}>
-                          {(p * 100).toFixed(1)}%
-                        </span>
-                      </div>
+                      <span
+                        className={`w-14 shrink-0 text-right font-mono text-sm ${
+                          i === 0 ? "font-semibold text-accent-deep" : "text-ink-dim"
+                        }`}
+                      >
+                        {(p * 100).toFixed(1)}%
+                      </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-t border-hairline pt-4">
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-5">
                   <p className="font-mono text-xs text-ink-faint">
-                    {result.file} · MFCC {result.mfccMs.toFixed(0)}ms · inferensi {result.inferMs.toFixed(0)}ms · 100% di browser
+                    {result.file} · MFCC {result.mfccMs.toFixed(0)}ms · inferensi {result.inferMs.toFixed(0)}ms
                   </p>
                   <button
                     onClick={handleReset}
-                    className="px-4 py-2 rounded-lg border border-hairline text-sm font-medium text-ink-dim hover:border-accent hover:text-accent transition-colors"
+                    className="rounded-[6px] border border-hairline px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-dim"
                   >
-                    Analisis file lain
+                    Analyze another file
                   </button>
                 </div>
-              </motion.div>
-            )}
-          </motion.div>
+              </Panel>
+            </motion.div>
+          )}
 
-          <p className="text-center text-ink-faint text-sm max-w-2xl mx-auto">
-            Model: LSTM 128 → Dense 64 → 5 (softmax), input MFCC 100×13. Ekstraksi fitur menggunakan
-            implementasi JavaScript yang disetarakan dengan librosa (selisih &lt; 1e-4). Hasil ini bersifat
-            edukatif dan bukan pengganti diagnosis medis.
+          <p className="mx-auto max-w-2xl text-center text-sm leading-relaxed text-ink-faint">
+            Model: LSTM 128 → Dense 64 → 5 (softmax), input MFCC 100×13. Ekstraksi fitur memakai
+            implementasi JavaScript yang disetarakan dengan librosa (selisih &lt; 1e-4). Hasil
+            bersifat edukatif dan bukan pengganti diagnosis medis.
           </p>
         </div>
       </div>

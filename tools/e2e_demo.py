@@ -22,7 +22,7 @@ with sync_playwright() as p:
     for label, want in EXPECT.items():
         page.click(f"button:has-text('Sample {label} ·')")
         page.wait_for_function(
-            "document.body.textContent.includes('keyakinan')", timeout=30000
+            "document.body.textContent.includes('Confidence')", timeout=30000
         )
         h2 = page.eval_on_selector("h2", "el => el.textContent")
         conf = page.eval_on_selector(
@@ -34,7 +34,7 @@ with sync_playwright() as p:
             ok = False
         print(f"{label}: top={top} conf={conf} -> {verdict}")
         if label != "N":
-            page.click("button:has-text('Analisis file lain')")
+            page.click("button:has-text('Analyze another file')")
             page.wait_for_function(
                 "document.querySelector('input[type=file]') !== null", timeout=10000
             )
